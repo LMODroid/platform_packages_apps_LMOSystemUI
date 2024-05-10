@@ -25,6 +25,7 @@ import com.libremobileos.systemui.qs.tiles.CaffeineTile
 import com.libremobileos.systemui.qs.tiles.CellularTile
 import com.libremobileos.systemui.qs.tiles.DataSwitchTile
 import com.libremobileos.systemui.qs.tiles.FastChargeTile
+import com.libremobileos.systemui.qs.tiles.FlashlightStrengthTile;
 import com.libremobileos.systemui.qs.tiles.HeadsUpTile
 import com.libremobileos.systemui.qs.tiles.PowerShareTile
 import com.libremobileos.systemui.qs.tiles.ReadingModeTile
@@ -82,6 +83,12 @@ interface LMOQSModule {
     @IntoMap
     @StringKey(FastChargeTile.TILE_SPEC)
     fun bindFastChargeTile(fastChargeTile: FastChargeTile): QSTileImpl<*>
+
+    /** Inject FlashlightStrengthTile into tileMap in QSModule */
+    @Binds
+    @IntoMap
+    @StringKey(FlashlightStrengthTile.TILE_SPEC)
+    fun bindFlashlightStrengthTile(flashlightStrengthTile: FlashlightStrengthTile): QSTileImpl<*>
 
     /** Inject HeadsUpTile into tileMap in QSModule */
     @Binds
