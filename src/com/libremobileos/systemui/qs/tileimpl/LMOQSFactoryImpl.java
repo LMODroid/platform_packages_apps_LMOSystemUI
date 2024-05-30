@@ -59,7 +59,8 @@ public class LMOQSFactoryImpl extends QSFactoryImpl {
                     icon,
                     collapsedView,
                     touchableTile.getTouchListener(),
-                    touchableTile.getSettingsSystemKey());
+                    touchableTile.getSettingsSystemKey(),
+                    touchableTile.getSettingsDefaultValue());
         }
         return new QSTileViewImpl(context, icon, collapsedView);
     }
