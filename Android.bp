@@ -36,7 +36,10 @@ android_library {
     ],
     manifest: "AndroidManifest.xml",
     plugins: ["dagger2-compiler"],
-    javacflags: ["-Adagger.fastInit=enabled"],
+    javacflags: [
+        "-Adagger.fastInit=enabled",
+        "-Adagger.useBindingGraphFix=ENABLED",
+    ],
 }
 
 android_app {
