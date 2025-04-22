@@ -32,7 +32,7 @@ android_library {
         "SystemUIPluginLib",
         "SystemUISharedLib",
         "vendor.lineage.fastcharge-V1.0-java",
-        "vendor.lineage.powershare-V1.0-java",
+        "vendor.lineage.powershare-V1-java",
     ],
     manifest: "AndroidManifest.xml",
     plugins: ["dagger2-compiler"],
