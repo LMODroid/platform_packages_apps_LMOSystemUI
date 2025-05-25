@@ -18,7 +18,6 @@ package com.libremobileos.systemui;
 
 import com.android.systemui.dagger.DefaultComponentBinder;
 import com.android.systemui.dagger.DependencyProvider;
-import com.android.systemui.dagger.SystemUIBinder;
 import com.android.systemui.dagger.SystemUICoreStartableModule;
 import com.android.systemui.dagger.SystemUIModule;
 import com.android.systemui.dagger.SysUIComponent;
@@ -41,7 +40,6 @@ import dagger.Subcomponent;
         DependencyProvider.class,
         NotificationInsetsModule.class,
         QsFrameTranslateModule.class,
-        SystemUIBinder.class,
         SystemUIModule.class,
         SystemUICoreStartableModule.class,
         SysUIUnfoldModule.class,
