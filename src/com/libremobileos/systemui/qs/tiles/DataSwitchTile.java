@@ -38,6 +38,7 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.telephony.IccCardConstants;
 import com.android.internal.telephony.TelephonyIntents;
+import com.android.systemui.R;
 import com.android.systemui.animation.Expandable;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -51,7 +52,6 @@ import com.android.systemui.qs.logging.QSLogger;
 import com.android.systemui.qs.pipeline.domain.interactor.PanelInteractor;
 import com.android.systemui.qs.tileimpl.QSTileImpl;
 import com.android.systemui.qs.tileimpl.QSTileImpl.ResourceIcon;
-import com.android.systemui.res.R;
 
 import java.util.List;
 
@@ -198,14 +198,16 @@ public class DataSwitchTile extends QSTileImpl<BooleanState> {
             case 0:
                 state.icon = ResourceIcon.get(R.drawable.ic_qs_data_switch_0);
                 state.value = false;
-                state.secondaryLabel = mContext.getString(R.string.tile_unavailable);
+                state.secondaryLabel =
+                        mContext.getString(com.android.systemui.res.R.string.tile_unavailable);
                 break;
             case 1:
                 state.icon = ResourceIcon.get(activeSIMZero
                         ? R.drawable.ic_qs_data_switch_1
                         : R.drawable.ic_qs_data_switch_2);
                 state.value = false;
-                state.secondaryLabel = mContext.getString(R.string.tile_unavailable);
+                state.secondaryLabel =
+                        mContext.getString(com.android.systemui.res.R.string.tile_unavailable);
                 break;
             case 2:
                 state.icon = ResourceIcon.get(activeSIMZero
@@ -217,7 +219,8 @@ public class DataSwitchTile extends QSTileImpl<BooleanState> {
             default:
                 state.icon = ResourceIcon.get(R.drawable.ic_qs_data_switch_1);
                 state.value = false;
-                state.secondaryLabel = mContext.getString(R.string.tile_unavailable);
+                state.secondaryLabel =
+                        mContext.getString(com.android.systemui.res.R.string.tile_unavailable);
                 break;
         }
         if (mSimCount < 2) {
@@ -265,7 +268,8 @@ public class DataSwitchTile extends QSTileImpl<BooleanState> {
 
     private String getActiveSlotName() {
         TelephonyManager telephonyManager;
-        String mInitialState = mContext.getString(R.string.tile_unavailable);
+        String mInitialState =
+                mContext.getString(com.android.systemui.res.R.string.tile_unavailable);
         List<SubscriptionInfo> subInfoList =
                 mSubscriptionManager.getActiveSubscriptionInfoList(true);
         if (subInfoList != null) {
