@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.libremobileos.systemui;
+package com.libremobileos.systemui.dagger;
 
 import com.android.systemui.dagger.GlobalModule;
 import com.android.systemui.dagger.GlobalRootComponent;

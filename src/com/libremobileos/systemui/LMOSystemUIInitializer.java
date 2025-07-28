@@ -20,7 +20,7 @@ import android.content.Context;
 
 import com.android.systemui.SystemUIInitializer;
 import com.android.systemui.dagger.GlobalRootComponent;
-import com.libremobileos.systemui.DaggerLMOGlobalRootComponent;
+import com.libremobileos.systemui.dagger.DaggerLMOGlobalRootComponent;
 
 /**
  * LMO variant {@link SystemUIInitializer}, that substitutes default {@link GlobalRootComponent} for

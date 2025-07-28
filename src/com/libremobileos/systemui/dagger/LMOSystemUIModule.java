@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.libremobileos.systemui;
+package com.libremobileos.systemui.dagger;
 
 import static com.android.systemui.Dependency.ALLOW_NOTIFICATION_LONG_PRESS_NAME;
 import static com.android.systemui.Dependency.LEAK_REPORT_EMAIL_NAME;
