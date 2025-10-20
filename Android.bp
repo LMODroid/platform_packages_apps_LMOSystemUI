@@ -31,7 +31,6 @@ android_library {
         "SystemUI-core",
         "SystemUIPluginLib",
         "SystemUISharedLib",
-        "vendor.lineage.fastcharge-V1.0-java",
         "vendor.lineage.powershare-V1-java",
     ],
     manifest: "AndroidManifest.xml",
