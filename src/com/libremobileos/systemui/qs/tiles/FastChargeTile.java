@@ -40,17 +40,19 @@ import com.android.systemui.qs.QsEventLogger;
 import com.android.systemui.qs.QSHost;
 import com.android.systemui.qs.tileimpl.QSTileImpl;
 
-import vendor.lineage.fastcharge.V1_0.IFastCharge;
+import com.libremobileos.health.HealthInterface;
 
 import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 
+import vendor.lineage.health.FastChargeMode;
+
 public class FastChargeTile extends QSTileImpl<BooleanState> {
 
     public static final String TILE_SPEC = "fastcharge";
 
-    private IFastCharge mFastCharge;
+    private HealthInterface mHealthInterface;
 
     @Inject
     public FastChargeTile(
@@ -66,15 +68,12 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
     ) {
         super(host, uiEventLogger, backgroundLooper, mainHandler, falsingManager, metricsLogger,
                 statusBarStateController, activityStarter, qsLogger);
-        mFastCharge = getFastCharge();
-        if (mFastCharge == null) {
-            return;
-        }
+        mHealthInterface = HealthInterface.getInstance(mContext);
     }
 
     @Override
     public boolean isAvailable() {
-        return mFastCharge != null;
+        return mHealthInterface.isFastChargeSupported();
     }
 
     @Override
@@ -86,14 +85,11 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
 
     @Override
     public void handleClick(@Nullable Expandable expandable) {
-        try {
-            boolean fastChargeEnabled = mFastCharge.isEnabled();
-
-            if (mFastCharge.setEnabled(!fastChargeEnabled) != fastChargeEnabled) {
-                refreshState();
-            }
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
+        boolean fastChargeEnabled = mHealthInterface.getFastChargeMode() != FastChargeMode.NONE;
+        if (mHealthInterface.setFastChargeMode(
+                fastChargeEnabled ? FastChargeMode.NONE : FastChargeMode.FAST_CHARGE
+            ) != fastChargeEnabled) {
+            refreshState();
         }
     }
 
@@ -114,12 +110,7 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
         }
 
         state.icon = ResourceIcon.get(R.drawable.ic_qs_fastcharge);
-        try {
-            state.value = mFastCharge.isEnabled();
-        } catch (RemoteException ex) {
-            state.value = false;
-            ex.printStackTrace();
-        }
+        state.value = mHealthInterface.getFastChargeMode() != FastChargeMode.NONE;
         state.label = mContext.getString(R.string.quick_settings_fastcharge_label);
 
         state.state = state.value ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE;
@@ -133,17 +124,5 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
 
     @Override
     public void handleSetListening(boolean listening) {
-    }
-
-    private synchronized IFastCharge getFastCharge() {
-        try {
-            return IFastCharge.getService();
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
-        } catch (NoSuchElementException ex) {
-            // service not available
-        }
-
-        return null;
     }
 }
