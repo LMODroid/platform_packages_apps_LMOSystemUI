@@ -25,7 +25,6 @@ import com.android.systemui.qs.shared.model.TileCategory
 import com.libremobileos.systemui.qs.tiles.AmbientDisplayTile
 import com.libremobileos.systemui.qs.tiles.AODTile
 import com.libremobileos.systemui.qs.tiles.CaffeineTile
-import com.libremobileos.systemui.qs.tiles.CellularTile
 import com.libremobileos.systemui.qs.tiles.DataSwitchTile
 import com.libremobileos.systemui.qs.tiles.FastChargeTile
 import com.libremobileos.systemui.qs.tiles.HeadsUpTile
@@ -35,7 +34,6 @@ import com.libremobileos.systemui.qs.tiles.SyncTile
 import com.libremobileos.systemui.qs.tiles.UsbTetherTile
 import com.libremobileos.systemui.qs.tiles.VpnTile
 import com.libremobileos.systemui.qs.tiles.VPNTetheringTile
-import com.libremobileos.systemui.qs.tiles.WifiTile
 
 import com.android.systemui.qs.tiles.base.shared.model.QSTileConfig
 import com.android.systemui.qs.tiles.base.shared.model.QSTileUIConfig
@@ -67,12 +65,6 @@ interface LMOQSModule {
     @IntoMap
     @StringKey(CaffeineTile.TILE_SPEC)
     fun bindCaffeineTile(caffeineTile: CaffeineTile): QSTileImpl<*>
-
-    /** Inject CellularTile into tileMap in QSModule */
-    @Binds
-    @IntoMap
-    @StringKey(CellularTile.TILE_SPEC)
-    fun bindCellularTile(cellularTile: CellularTile): QSTileImpl<*>
 
     /** Inject DataSwitchTile into tileMap in QSModule */
     @Binds
@@ -128,12 +120,6 @@ interface LMOQSModule {
     @StringKey(VPNTetheringTile.TILE_SPEC)
     fun bindVPNTetheringTile(vpnTetheringTile: VPNTetheringTile): QSTileImpl<*>
 
-    /** Inject WifiTile into tileMap in QSModule */
-    @Binds
-    @IntoMap
-    @StringKey(WifiTile.TILE_SPEC)
-    fun bindWifiTile(wifiTile: WifiTile): QSTileImpl<*>
-
     companion object {
         @Provides
         @IntoMap
@@ -178,21 +164,6 @@ interface LMOQSModule {
                     ),
                 instanceId = uiEventLogger.getNewInstanceId(),
                 category = TileCategory.DISPLAY,
-            )
-
-        @Provides
-        @IntoMap
-        @StringKey(CellularTile.TILE_SPEC)
-        fun provideCellularTileConfig(uiEventLogger: QsEventLogger): QSTileConfig =
-            QSTileConfig(
-                tileSpec = TileSpec.create(CellularTile.TILE_SPEC),
-                uiConfig =
-                    QSTileUIConfig.Resource(
-                        iconRes = com.android.systemui.res.R.drawable.ic_swap_vert,
-                        labelRes = com.android.systemui.res.R.string.quick_settings_cellular_detail_title
-                    ),
-                instanceId = uiEventLogger.getNewInstanceId(),
-                category = TileCategory.CONNECTIVITY,
             )
 
         @Provides
@@ -325,21 +296,6 @@ interface LMOQSModule {
                     QSTileUIConfig.Resource(
                         iconRes = R.drawable.ic_qs_vpn_tethering,
                         labelRes = R.string.vpn_tethering_label
-                    ),
-                instanceId = uiEventLogger.getNewInstanceId(),
-                category = TileCategory.CONNECTIVITY,
-            )
-
-        @Provides
-        @IntoMap
-        @StringKey(WifiTile.TILE_SPEC)
-        fun provideWifiTileConfig(uiEventLogger: QsEventLogger): QSTileConfig =
-            QSTileConfig(
-                tileSpec = TileSpec.create(WifiTile.TILE_SPEC),
-                uiConfig =
-                    QSTileUIConfig.Resource(
-                        iconRes = com.android.settingslib.R.drawable.ic_wifi_3,
-                        labelRes = com.android.systemui.res.R.string.quick_settings_wifi_label
                     ),
                 instanceId = uiEventLogger.getNewInstanceId(),
                 category = TileCategory.CONNECTIVITY,
