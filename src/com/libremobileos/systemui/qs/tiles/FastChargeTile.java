@@ -88,7 +88,7 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
         boolean fastChargeEnabled = mHealthInterface.getFastChargeMode() != FastChargeMode.NONE;
         if (mHealthInterface.setFastChargeMode(
                 fastChargeEnabled ? FastChargeMode.NONE : FastChargeMode.FAST_CHARGE
-            ) != fastChargeEnabled) {
+            )) {
             refreshState();
         }
     }
