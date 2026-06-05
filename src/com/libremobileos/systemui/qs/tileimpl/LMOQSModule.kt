@@ -178,6 +178,8 @@ interface LMOQSModule {
                     ),
                 instanceId = uiEventLogger.getNewInstanceId(),
                 category = TileCategory.DISPLAY,
+                isResizable = false,
+                isLargeByDefault = true,
             )
 
         @Provides
