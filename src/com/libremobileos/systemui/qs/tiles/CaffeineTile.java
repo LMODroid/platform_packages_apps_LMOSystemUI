@@ -230,6 +230,7 @@ public class CaffeineTile extends QSTileImpl<BooleanState> {
                     R.string.accessibility_quick_settings_caffeine_off);
             state.state = Tile.STATE_INACTIVE;
         }
+        state.labelInIconMode = state.secondaryLabel;
     }
 
     private final class Receiver extends BroadcastReceiver {
