@@ -22,10 +22,14 @@ import com.android.systemui.dagger.SystemUICoreStartableModule;
 import com.android.systemui.dagger.SystemUIModule;
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.controls.dagger.StartControlsStartableModule;
 import com.android.systemui.keyguard.CustomizationProvider;
+import com.android.systemui.settings.MultiUserUtilsModule;
 import com.android.systemui.statusbar.NotificationInsetsModule;
 import com.android.systemui.statusbar.QsFrameTranslateModule;
 import com.android.systemui.unfold.SysUIUnfoldModule;
+import com.android.systemui.util.StartBinderLoggerModule;
+import com.android.systemui.wallpapers.dagger.WallpaperModule;
 
 import com.libremobileos.systemui.keyguard.LMOKeyguardSliceProvider;
 
@@ -38,11 +42,15 @@ import dagger.Subcomponent;
 @Subcomponent(modules = {
         DefaultComponentBinder.class,
         DependencyProvider.class,
+        MultiUserUtilsModule.class,
         NotificationInsetsModule.class,
         QsFrameTranslateModule.class,
+        StartControlsStartableModule.class,
+        StartBinderLoggerModule.class,
         SystemUIModule.class,
         SystemUICoreStartableModule.class,
         SysUIUnfoldModule.class,
+        WallpaperModule.class,
         LMOSystemUIModule.class})
 public interface LMOSystemUIComponent extends SysUIComponent {
 
