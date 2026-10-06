@@ -28,7 +28,7 @@ android_library {
         "res",
     ],
     static_libs: [
-        "SystemUI-core",
+        "SystemUI-application",
         "SystemUIPluginLib",
         "SystemUISharedLib",
         "vendor.lineage.powershare-V1-java",
