@@ -30,6 +30,7 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
 
 import androidx.annotation.Nullable;
 
@@ -51,7 +52,6 @@ import com.android.systemui.qs.QsEventLogger;
 import com.android.systemui.qs.logging.QSLogger;
 import com.android.systemui.qs.pipeline.domain.interactor.PanelInteractor;
 import com.android.systemui.qs.tileimpl.QSTileImpl;
-import com.android.systemui.qs.tileimpl.QSTileImpl.ResourceIcon;
 
 import java.util.List;
 
@@ -64,6 +64,9 @@ public class DataSwitchTile extends QSTileImpl<BooleanState> {
     private boolean mCanSwitch = true;
     private boolean mRegistered = false;
     private int mSimCount = 0;
+
+    // Icons by resource id, loaded on first use
+    private final SparseArray<Icon> mIcons = new SparseArray<>();
     BroadcastReceiver mSimReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "mSimReceiver:onReceive");
@@ -136,6 +139,15 @@ public class DataSwitchTile extends QSTileImpl<BooleanState> {
         }
     }
 
+    private Icon getIcon(int resId) {
+        Icon icon = mIcons.get(resId);
+        if (icon == null) {
+            icon = maybeLoadResourceIcon(resId);
+            mIcons.put(resId, icon);
+        }
+        return icon;
+    }
+
     private void updateSimCount() {
         String simState = SystemProperties.get("gsm.sim.state");
         Log.d(TAG, "DataSwitchTile:updateSimCount:simState=" + simState);
@@ -196,13 +208,13 @@ public class DataSwitchTile extends QSTileImpl<BooleanState> {
         updateSimCount();
         switch (mSimCount) {
             case 0:
-                state.icon = ResourceIcon.get(R.drawable.ic_qs_data_switch_0);
+                state.icon = getIcon(R.drawable.ic_qs_data_switch_0);
                 state.value = false;
                 state.secondaryLabel =
                         mContext.getString(com.android.systemui.res.R.string.tile_unavailable);
                 break;
             case 1:
-                state.icon = ResourceIcon.get(activeSIMZero
+                state.icon = getIcon(activeSIMZero
                         ? R.drawable.ic_qs_data_switch_1
                         : R.drawable.ic_qs_data_switch_2);
                 state.value = false;
@@ -210,14 +222,14 @@ public class DataSwitchTile extends QSTileImpl<BooleanState> {
                         mContext.getString(com.android.systemui.res.R.string.tile_unavailable);
                 break;
             case 2:
-                state.icon = ResourceIcon.get(activeSIMZero
+                state.icon = getIcon(activeSIMZero
                         ? R.drawable.ic_qs_data_switch_1
                         : R.drawable.ic_qs_data_switch_2);
                 state.value = true;
                 state.secondaryLabel = getActiveSlotName();
                 break;
             default:
-                state.icon = ResourceIcon.get(R.drawable.ic_qs_data_switch_1);
+                state.icon = getIcon(R.drawable.ic_qs_data_switch_1);
                 state.value = false;
                 state.secondaryLabel =
                         mContext.getString(com.android.systemui.res.R.string.tile_unavailable);

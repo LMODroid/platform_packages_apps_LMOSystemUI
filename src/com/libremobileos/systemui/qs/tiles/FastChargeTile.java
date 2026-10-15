@@ -52,6 +52,9 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
 
     public static final String TILE_SPEC = "fastcharge";
 
+    @Nullable
+    private Icon mIcon = null;
+
     private HealthInterface mHealthInterface;
 
     @Inject
@@ -109,7 +112,10 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
             return;
         }
 
-        state.icon = ResourceIcon.get(R.drawable.ic_qs_fastcharge);
+        if (mIcon == null) {
+            mIcon = maybeLoadResourceIcon(R.drawable.ic_qs_fastcharge);
+        }
+        state.icon = mIcon;
         state.value = mHealthInterface.getFastChargeMode() != FastChargeMode.NONE;
         state.label = mContext.getString(R.string.quick_settings_fastcharge_label);
 
