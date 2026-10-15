@@ -31,13 +31,17 @@ android_library {
         "SystemUI-application",
         "SystemUIPluginLib",
         "SystemUISharedLib",
+        "dagger2",
         "vendor.lineage.powershare-V1-java",
     ],
     manifest: "AndroidManifest.xml",
     plugins: ["dagger2-compiler"],
-    javacflags: [
-        "-Adagger.fastInit=enabled",
-        "-Adagger.useBindingGraphFix=ENABLED",
+    enable_ksp: true,
+    annotation_processor_flags: [
+        "dagger.fastInit=enabled",
+        "dagger.explicitBindingConflictsWithInject=ERROR",
+        "dagger.strictMultibindingValidation=enabled",
+        "dagger.useBindingGraphFix=ENABLED",
     ],
 }
 
@@ -54,6 +58,7 @@ android_app {
         "SystemUI",
     ],
     resource_dirs: [],
+    enable_ksp: true,
 
     platform_apis: true,
     system_ext_specific: true,
@@ -65,6 +70,9 @@ android_app {
     dxflags: ["--multi-dex"],
     optimize: {
         proguard_flags_files: ["proguard.flags"],
+        included_proguard_flags_files: [
+            ":sysui_proguard_common_and_kotlin",
+        ],
     },
     required: [
         "privapp_whitelist_com.android.systemui",
