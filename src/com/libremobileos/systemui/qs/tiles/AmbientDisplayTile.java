@@ -119,7 +119,9 @@ public class AmbientDisplayTile extends QSTileImpl<BooleanState> {
 
     @Override
     protected void handleClick(@Nullable Expandable expandable) {
-        mSetting.setValue(mState.value ? 0 : 1);
+        final int value = mSetting.getValue() == 0 ? 1 : 0;
+        mSetting.setValue(value);
+        refreshState(value);
     }
 
     @Override
