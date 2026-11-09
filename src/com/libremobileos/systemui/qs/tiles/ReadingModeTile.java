@@ -36,11 +36,14 @@ import com.android.systemui.plugins.qs.QSTile.BooleanState;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.qs.QSHost;
 import com.android.systemui.qs.QsEventLogger;
+import com.android.systemui.qs.UserSettingObserver;
 import com.android.systemui.qs.logging.QSLogger;
 import com.android.systemui.qs.tileimpl.QSTileImpl;
+import com.android.systemui.settings.UserTracker;
+import com.android.systemui.util.settings.SystemSettings;
 
 import com.libremobileos.hardware.LineageHardwareManager;
-import com.libremobileos.util.PackageManagerUtils;
+import com.libremobileos.providers.LMOSettings;
 
 import javax.inject.Inject;
 
@@ -54,6 +57,7 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
     private static final Intent DISPLAY_SETTINGS = new Intent("android.settings.DISPLAY_SETTINGS");
 
     private LineageHardwareManager mHardware;
+    private final UserSettingObserver mSetting;
 
     @Inject
     public ReadingModeTile(
@@ -65,11 +69,20 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
             MetricsLogger metricsLogger,
             StatusBarStateController statusBarStateController,
             ActivityStarter activityStarter,
-            QSLogger qsLogger
+            QSLogger qsLogger,
+            UserTracker userTracker,
+            SystemSettings systemSettings
     ) {
         super(host, uiEventLogger, backgroundLooper, mainHandler, falsingManager, metricsLogger,
                 statusBarStateController, activityStarter, qsLogger);
         mHardware = LineageHardwareManager.getInstance(mContext);
+        mSetting = new UserSettingObserver(systemSettings, mHandler,
+                LMOSettings.System.DISPLAY_READING_MODE, userTracker.getUserId(), 0) {
+            @Override
+            protected void handleValueChanged(int value, boolean observedChange) {
+                handleRefreshState(value);
+            }
+        };
     }
 
     @Override
@@ -79,9 +92,11 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
 
     @Override
     protected void handleClick(@Nullable Expandable expandable) {
-        boolean newStatus = !isReadingModeEnabled();
-        mHardware.set(LineageHardwareManager.FEATURE_READING_ENHANCEMENT, newStatus);
-        refreshState();
+        final boolean newStatus = mSetting.getValue() == 0;
+        if (mHardware.set(LineageHardwareManager.FEATURE_READING_ENHANCEMENT, newStatus)) {
+            mSetting.setValue(newStatus ? 1 : 0);
+            refreshState(newStatus ? 1 : 0);
+        }
     }
 
     @Override
@@ -96,7 +111,8 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
 
     @Override
     protected void handleUpdateState(BooleanState state, Object arg) {
-        state.value = isReadingModeEnabled();
+        final int value = arg instanceof Integer ? (Integer) arg : mSetting.getValue();
+        state.value = value != 0;
         if (mIcon == null) {
             mIcon = maybeLoadResourceIcon(R.drawable.ic_qs_reader);
         }
@@ -125,10 +141,19 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
 
     @Override
     public void handleSetListening(boolean listening) {
-        // Do nothing
+        super.handleSetListening(listening);
+        mSetting.setListening(listening);
     }
 
-    private boolean isReadingModeEnabled() {
-        return mHardware.get(LineageHardwareManager.FEATURE_READING_ENHANCEMENT);
+    @Override
+    protected void handleUserSwitch(int newUserId) {
+        mSetting.setUserId(newUserId);
+        handleRefreshState(mSetting.getValue());
+    }
+
+    @Override
+    protected void handleDestroy() {
+        super.handleDestroy();
+        mSetting.setListening(false);
     }
 }

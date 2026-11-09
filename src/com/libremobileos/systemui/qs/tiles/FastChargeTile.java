@@ -19,7 +19,6 @@ package com.libremobileos.systemui.qs.tiles;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.RemoteException;
 import android.service.quicksettings.Tile;
 
 import androidx.annotation.Nullable;
@@ -38,11 +37,13 @@ import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.qs.logging.QSLogger;
 import com.android.systemui.qs.QsEventLogger;
 import com.android.systemui.qs.QSHost;
+import com.android.systemui.qs.UserSettingObserver;
 import com.android.systemui.qs.tileimpl.QSTileImpl;
+import com.android.systemui.settings.UserTracker;
+import com.android.systemui.util.settings.SystemSettings;
 
 import com.libremobileos.health.HealthInterface;
-
-import java.util.NoSuchElementException;
+import com.libremobileos.providers.LMOSettings;
 
 import javax.inject.Inject;
 
@@ -56,6 +57,7 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
     private Icon mIcon = null;
 
     private HealthInterface mHealthInterface;
+    private final UserSettingObserver mSetting;
 
     @Inject
     public FastChargeTile(
@@ -67,11 +69,21 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
             MetricsLogger metricsLogger,
             StatusBarStateController statusBarStateController,
             ActivityStarter activityStarter,
-            QSLogger qsLogger
+            QSLogger qsLogger,
+            UserTracker userTracker,
+            SystemSettings systemSettings
     ) {
         super(host, uiEventLogger, backgroundLooper, mainHandler, falsingManager, metricsLogger,
                 statusBarStateController, activityStarter, qsLogger);
         mHealthInterface = HealthInterface.getInstance(mContext);
+        mSetting = new UserSettingObserver(systemSettings, mHandler,
+                LMOSettings.System.FAST_CHARGE_MODE, userTracker.getUserId(),
+                mHealthInterface.getFastChargeMode()) {
+            @Override
+            protected void handleValueChanged(int value, boolean observedChange) {
+                handleRefreshState(value);
+            }
+        };
     }
 
     @Override
@@ -88,7 +100,7 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
 
     @Override
     public void handleClick(@Nullable Expandable expandable) {
-        boolean fastChargeEnabled = mHealthInterface.getFastChargeMode() != FastChargeMode.NONE;
+        boolean fastChargeEnabled = mSetting.getValue() != FastChargeMode.NONE;
         if (mHealthInterface.setFastChargeMode(
                 fastChargeEnabled ? FastChargeMode.NONE : FastChargeMode.FAST_CHARGE
             )) {
@@ -116,7 +128,8 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
             mIcon = maybeLoadResourceIcon(R.drawable.ic_qs_fastcharge);
         }
         state.icon = mIcon;
-        state.value = mHealthInterface.getFastChargeMode() != FastChargeMode.NONE;
+        final int value = arg instanceof Integer ? (Integer) arg : mSetting.getValue();
+        state.value = value != FastChargeMode.NONE;
         state.label = mContext.getString(R.string.quick_settings_fastcharge_label);
 
         state.state = state.value ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE;
@@ -130,5 +143,19 @@ public class FastChargeTile extends QSTileImpl<BooleanState> {
 
     @Override
     public void handleSetListening(boolean listening) {
+        super.handleSetListening(listening);
+        mSetting.setListening(listening);
+    }
+
+    @Override
+    protected void handleUserSwitch(int newUserId) {
+        mSetting.setUserId(newUserId);
+        handleRefreshState(mSetting.getValue());
+    }
+
+    @Override
+    protected void handleDestroy() {
+        super.handleDestroy();
+        mSetting.setListening(false);
     }
 }
